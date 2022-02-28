@@ -9,32 +9,29 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const redirectUri = 'http://localhost:3000/callback';
-const port = process.env.PORT || 3005;
+const redirectUri = 'http://localhost:3000';
+const port = 3005;
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const code = req.body.code;
-
-  spotifyApi = new SpotifyWebApi({
+  const spotifyApi = new SpotifyWebApi({
     redirectUri: redirectUri,
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET
   });
 
-  scopes = ['playlist-modify-public', 'playlist-modify-private'];
-
-  spotifyApi
-    .authorizeCodeGrant(code)
-    .then((data) => {
-      res.json({
-        accessToken: data.body['access_token'],
-        refreshToken: data.body['refresh_token'],
-        expiresIn: data.body['expires_in']
-      });
-    })
-    .catch(() => {
-      res.sendStatus(400);
+  try {
+    const data = await spotifyApi.authorizationCodeGrant(code);
+    console.log(data.body);
+    res.json({
+      accessToken: data.body.access_token,
+      refreshToken: data.body.refresh_token,
+      expiresIn: data.body.expires_in
     });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(400);
+  }
 });
 
 app.listen(port);

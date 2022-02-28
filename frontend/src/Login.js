@@ -1,10 +1,16 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 
-const AUTH_URL =
-  'https://accounts.spotify.com/authorize?client_id=8b945ef10ea24755b83ac50cede405a0&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-library-read%20user-library-modify%20user-read-playback-state%20user-modify-playback-state';
+const clientId = process.env.REACT_APP_CLIENT_ID,
+  resType = 'code',
+  redirectUri = 'http://localhost:3000',
+  scopes = ['playlist-modify-public', 'playlist-modify-private'];
 
-export default function Login() {
+const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=${resType}&redirect_uri=${redirectUri}&scope=${scopes.join(
+  '%20'
+)}`;
+
+export const Login = () => {
   return (
     <Container
       className="d-flex justify-content-center align-items-center"
@@ -15,4 +21,4 @@ export default function Login() {
       </a>
     </Container>
   );
-}
+};

@@ -5,12 +5,27 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import axios from 'axios';
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: '192e51fc44214cf0b6b1499d53081333'
+  clientId: process.env.REACT_APP_CLIENT_ID
 });
 
 export const Dashboard = ({ code }) => {
   const accessToken = useAuth(code);
   const [search, setSearch] = useState('');
 
-  return <div>Dashboard</div>;
+  useEffect(() => {
+    if (!accessToken) return;
+    spotifyApi.setAccessToken(accessToken);
+  }, [accessToken]);
+
+  return (
+    <Container>
+      <Form.Control
+        type="search"
+        placeholder="Enter your text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      {search}
+    </Container>
+  );
 };
