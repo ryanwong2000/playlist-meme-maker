@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+/**
+ * Custom hook to retrieve an initial access token + refresh token,
+ * and then refresh that token on an interval
+ * @param {string} code - The code returned after getting redirected from the auth url
+ * @returns A valid access token
+ */
 export default function useAuth(code) {
   const [accessToken, setAccessToken] = useState();
   const [refreshToken, setRefreshToken] = useState();
