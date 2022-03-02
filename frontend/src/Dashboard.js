@@ -30,11 +30,12 @@ export const Dashboard = ({ code }) => {
     if (!search) return setSearchResults([]);
 
     let cancel = false;
+    let results = [];
 
-    spotifyApi.searchTracks(search, { limit: 3 }).then((data) => {
+    spotifyApi.searchTracks(search).then((res) => {
       if (cancel) return;
       setSearchResults(
-        data.body.tracks.items.map((track) => {
+        res.body.tracks.items.map((track) => {
           const smallestAlbumImage = track.album.images.reduce(
             (smallest, image) => {
               if (image.height < smallest.height) return image;
