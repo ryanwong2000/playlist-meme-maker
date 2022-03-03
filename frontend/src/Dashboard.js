@@ -30,28 +30,29 @@ export const Dashboard = ({ code }) => {
     if (!search) return setSearchResults([]);
 
     let cancel = false;
-    let results = [];
 
-    spotifyApi.searchTracks(search).then((res) => {
-      if (cancel) return;
-      setSearchResults(
-        res.body.tracks.items.map((track) => {
-          const smallestAlbumImage = track.album.images.reduce(
-            (smallest, image) => {
-              if (image.height < smallest.height) return image;
-              return smallest;
-            },
-            track.album.images[0]
-          );
+    const words = search.split(' ');
 
-          return {
+    //only appends to state -> only sumbit once and refresh to the state
+    //check for good title (only the word in the title)
+    //check for correct order
+    words.forEach((word) => {
+      spotifyApi.searchTracks(word).then((res) => {
+        if (cancel) return;
+        //first track
+        const track = res.body.tracks.items[0];
+        setSearchResults((prev) => [
+          ...prev,
+          {
+            //first artist listed -> track.artists.map(artist => artist.name) -> array of artist names
             artist: track.artists[0].name,
             title: track.name,
             uri: track.uri,
-            albumUrl: smallestAlbumImage.url
-          };
-        })
-      );
+            //smallest image
+            albumUrl: track.album.images[2].url
+          }
+        ]);
+      });
     });
 
     return () => (cancel = true);
@@ -65,7 +66,7 @@ export const Dashboard = ({ code }) => {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      {search}
+      {search.split(' ')}
       <div className="flex-grow-1 my-2" style={{ overflowY: 'auto' }}>
         {searchResults.map((track) => (
           <Song track={track} key={track.uri} />
